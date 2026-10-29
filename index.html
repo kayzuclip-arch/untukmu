@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azza's Little Universe — From Kazu</title>
+    <style>
+        :root {
+            --bg-navy: #07152E;
+            --bg-ocean: #0B2D59;
+            --electric-blue: #4DA3FF;
+            --ice-blue: #C9E6FF;
+            --silver-white: #F5F9FF;
+            --card-bg: rgba(11, 45, 89, 0.65);
+            --card-border: rgba(77, 163, 255, 0.25);
+            --glow-shadow: 0 0 25px rgba(77, 163, 255, 0.35);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-navy);
+            color: var(--silver-white);
+            overflow-x: hidden;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        /* Starlight Background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(1px 1px at 25px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 180px 90px, var(--ice-blue), rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 120px 220px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 320px 280px, var(--electric-blue), rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 500px 150px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 680px 340px, var(--ice-blue), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 800px 200px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 900px 400px, var(--electric-blue), rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 1000px 500px;
+            opacity: 0.5;
+            animation: twinkleBg 15s infinite alternate linear;
+        }
+
+        @keyframes twinkleBg {
+            0% { opacity: 0.4; transform: translateY(0); }
+            50% { opacity: 0.7; transform: translateY(-8px); }
+            100% { opacity: 0.4; transform: translateY(-15px); }
+        }
+
+        /* Glowing Moon */
+        .moon-element {
+            position: fixed;
+            top: -100px;
+            right: -100px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(201, 230, 255, 0.2) 0%, rgba(7, 21, 46, 0) 75%);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Intro Screen / Opening */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #07152E 0%, #0B2D59 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .intro-content {
+            max-width: 650px;
+            text-align: center;
+            background: rgba(11, 45, 89, 0.8);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6), var(--glow-shadow);
+        }
+
+        .intro-content h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ffffff, var(--ice-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .intro-content p {
+            color: var(--ice-blue);
+            margin-bottom: 24px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        /* Main Container & Layout */
+        #main-app {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        #main-app.active {
+            display: block;
+            opacity: 1;
+        }
+
+        header, section, footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(7, 21, 46, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            z-index: 1000;
+            padding: 16px 0;
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--silver-white);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--ice-blue);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--silver-white);
+            text-shadow: 0 0 10px var(--electric-blue);
+        }
+
+        .book-badge-btn {
+            background: rgba(77, 163, 255, 0.15);
+            border: 1px solid var(--electric-blue);
+            color: var(--silver-white);
+            padding: 6px 14px;
+            border-radius: 99px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .book-badge-btn:hover {
+            background: rgba(77, 163, 255, 0.3);
+            box-shadow: 0 0 15px var(--electric-blue);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--silver-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media(max-width: 900px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(7, 21, 46, 0.95);
+                flex-direction: column;
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid var(--card-border);
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 28px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4DA3FF 0%, #1b66d2 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(77, 163, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(77, 163, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--silver-white);
+            border-color: var(--card-border);
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--electric-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--silver-white);
+        }
+
+        .section-header p {
+            color: var(--ice-blue);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Hero / Home Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 120px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(77, 163, 255, 0.1);
+            border: 1px solid rgba(77, 163, 255, 0.3);
+            border-radius: 99px;
+            font-size: 0.85rem;
+            color: var(--electric-blue);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.2rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ffffff, var(--ice-blue), var(--electric-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--ice-blue);
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Ferris Wheel 3D Section */
+        .ferris-hero-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 50px;
+            backdrop-filter: blur(16px);
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--glow-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ferris-visual {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 30px auto;
+            border: 3px dashed var(--electric-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: spinWheel 25s infinite linear;
+            position: relative;
+        }
+
+        @keyframes spinWheel {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .ferris-cabin {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--electric-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--electric-blue);
+        }
+
+        .ferris-cabin:nth-child(1) { top: -12px; left: calc(50% - 12px); }
+        .ferris-cabin:nth-child(2) { bottom: -12px; left: calc(50% - 12px); }
+        .ferris-cabin:nth-child(3) { left: -12px; top: calc(50% - 12px); }
+        .ferris-cabin:nth-child(4) { right: -12px; top: calc(50% - 12px); }
+
+        /* Attractions Section */
+        .attractions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .attraction-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            backdrop-filter: blur(16px);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .attraction-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--electric-blue);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), var(--glow-shadow);
+        }
+
+        .attraction-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--silver-white);
+        }
+
+        .attraction-card p {
+            color: var(--ice-blue);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        /* Mini Games Hub */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 35px;
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+
+        .game-card:hover {
+            border-color: var(--electric-blue);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), var(--glow-shadow);
+        }
+
+        .game-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .game-card p {
+            color: var(--ice-blue);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        /* Active Game Container */
+        .game-active-container {
+            background: rgba(7, 21, 46, 0.9);
+            border: 1px solid var(--electric-blue);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Quiz UI */
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .quiz-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: var(--silver-white);
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .quiz-btn:hover:not(:disabled) {
+            background: rgba(77, 163, 255, 0.15);
+            border-color: var(--electric-blue);
+        }
+
+        .quiz-btn.correct {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: #10b981;
+        }
+
+        .quiz-btn.incorrect {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: #ef4444;
+        }
+
+        /* Memory Card Game UI */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 450px;
+            margin: 20px auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: rgba(77, 163, 255, 0.1);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .memory-card.flipped, .memory-card.matched {
+            background: rgba(77, 163, 255, 0.3);
+            border-color: var(--electric-blue);
+        }
+
+        /* Catch Starlight Canvas Game */
+        .arcade-canvas-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            margin: 0 auto 20px auto;
+            background: #040c1d;
+            border: 1px solid var(--electric-blue);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        /* Hidden Hearts Game */
+        .park-exploration-area {
+            position: relative;
+            height: 350px;
+            background: radial-gradient(circle at center, #0B2D59 0%, #07152E 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .hidden-heart {
+            position: absolute;
+            cursor: pointer;
+            font-size: 1.5rem;
+            animation: floatHeart 3s infinite ease-in-out;
+            transition: var(--transition);
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.1); }
+        }
+
+        .hidden-heart.found {
+            opacity: 0.3;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        /* Night Show / Fireworks Canvas */
+        .fireworks-stage {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            background: #030814;
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 8, 20, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--electric-blue);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7), var(--glow-shadow);
+            position: relative;
+            transform: scale(0.95);
+            transition: var(--transition);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--ice-blue);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--silver-white);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(4, 12, 28, 0.95);
+            border-top: 1px solid var(--card-border);
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--ice-blue);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 70px 0; }
+            .ferris-hero-card, .modal-box, .intro-content { padding: 25px; }
+            .memory-grid { grid-template-columns: repeat(4, 1fr); max-width: 320px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .stars-container, .ferris-visual, * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Audio Element (Memutar music.mp4 lokal) -->
+    <audio id="bgMusic" loop>
+        <source src="music.mp4" type="audio/mp4">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
+    <!-- Starry Background & Moon -->
+    <div class="stars-container"></div>
+    <div class="moon-element"></div>
+
+    <!-- 1. OPENING SCREEN -->
+    <div id="intro-screen">
+        <div class="intro-content">
+            <span class="hero-badge">Special Dedication</span>
+            <h1>A Little World for Azza</h1>
+            <p>Di antara luasnya dunia dan banyaknya hal yang bisa kutemui, ada satu hal sederhana yang ingin kulakukan: membuat sebuah tempat kecil yang bisa mengingatkanmu bahwa kamu berharga.</p>
+            <p>Selamat datang di dunia kecil yang Kazu buat khusus untukmu, Azza.</p>
+            <button class="btn btn-primary" id="enterParkBtn">Enter the Park</button>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="main-app">
+
+        <!-- 3. NAVIGATION BAR -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#home" class="nav-logo">Azza's Little Universe</a>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#ferris-wheel-sec">Ferris Wheel</a></li>
+                    <li><a href="#attractions-sec">Attractions</a></li>
+                    <li><a href="#minigames-sec">Mini Games</a></li>
+                    <li><a href="#sky-garden-sec">Sky Garden</a></li>
+                    <li><a href="#night-show-sec">Night Show</a></li>
+                    <li><button class="book-badge-btn" id="musicToggleBtn" onclick="toggleMusic()">🎵 Putar Musik</button></li>
+                    <li><button class="book-badge-btn" id="openBookBtn">Adventure Book</button></li>
+                </ul>
+                <button class="menu-toggle" id="menuToggle">&#9776;</button>
+            </div>
+        </nav>
+
+        <main>
+            <!-- 2. HOME / HERO SECTION -->
+            <section id="home" class="hero">
+                <div class="container">
+                    <span class="hero-badge">A Gift from Kazu</span>
+                    <h1>Azza's Little Universe</h1>
+                    <p>Sebuah taman hiburan malam digital yang dirancang dengan ketulusan untuk menemanimu beristirahat sejenak dari penatnya hari.</p>
+                    <div class="hero-actions">
+                        <a href="#ferris-wheel-sec" class="btn btn-primary">Jelajahi Taman</a>
+                        <a href="#minigames-sec" class="btn btn-secondary">Mainkan Mini Games</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. FERRIS WHEEL 3D -->
+            <section id="ferris-wheel-sec">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Ferris Wheel of Wishes</h2>
+                        <p>Bianglala raksasa sebagai pusat keindahan malam yang berputar perlahan.</p>
+                    </div>
+                    <div class="ferris-hero-card">
+                        <div class="ferris-visual">
+                            <div class="ferris-cabin"></div>
+                            <div class="ferris-cabin"></div>
+                            <div class="ferris-cabin"></div>
+                            <div class="ferris-cabin"></div>
+                        </div>
+                        <h3 style="margin-bottom: 15px; font-size: 1.4rem;">Bianglala Kehidupan</h3>
+                        <p style="color: var(--ice-blue); max-width: 600px; margin: 0 auto 25px auto;">
+                            Setiap putaran membawa ketenangan baru dan mengingatkan bahwa setiap fase hidup memiliki keindahannya sendiri.
+                        </p>
+                        <button class="btn btn-primary" id="openFerrisModal">Naik Bianglala</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. THREE ROMANTIC ATTRACTIONS -->
+            <section id="attractions-sec">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Wahana Romantis</h2>
+                        <p>Tiga tempat istimewa penuh kenangan dan kata-kata tulus.</p>
+                    </div>
+                    <div class="attractions-grid">
+                        <!-- Wahana A -->
+                        <div class="attraction-card">
+                            <div>
+                                <h3>Tunnel of Memories</h3>
+                                <p>Terowongan bercahaya biru dengan perspektif 3D yang menyimpan pesan tentang perhatian dan kenangan sederhana.</p>
+                            </div>
+                            <button class="btn btn-secondary" id="openTunnelBtn">Masuk Terowongan</button>
+                        </div>
+                        <!-- Wahana B -->
+                        <div class="attraction-card">
+                            <div>
+                                <h3>Star Carousel</h3>
+                                <p>Komidi putar fantasi dengan ornamen bulan dan cahaya biru yang memberikan pesan penyemangat acak.</p>
+                            </div>
+                            <button class="btn btn-secondary" id="openCarouselBtn">Putar Komidi</button>
+                        </div>
+                        <!-- Wahana C -->
+                        <div class="attraction-card">
+                            <div>
+                                <h3>Sky Garden</h3>
+                                <p>Taman rahasia di atas bukit dengan bunga bercahaya dan air mancur biru yang menyimpan surat spesial.</p>
+                            </div>
+                            <button class="btn btn-primary" id="openGardenBtn">Buka Surat Taman</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7-13. MINI GAMES HUB -->
+            <section id="minigames-sec">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Mini Games Interaktif</h2>
+                        <p>Tujuh permainan santai dan bermakna yang dirancang khusus untuk Azza.</p>
+                    </div>
+                    <div class="games-grid">
+                        <div class="game-card">
+                            <div>
+                                <h3>1. Love Riddle</h3>
+                                <p>Kuis tebak-tebakan romantis dengan 10 pertanyaan pilihan ganda, sistem skor, combo, dan petunjuk lembut.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startMiniGame(1)">Mainkan Kuis</button>
+                        </div>
+                        <div class="game-card">
+                            <div>
+                                <h3>2. Choose Our Story</h3>
+                                <p>Petualangan cerita interaktif di taman malam dengan pilihan alur dan 3 ending berbeda.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startMiniGame(2)">Mulai Cerita</button>
+                        </div>
+                        <div class="game-card">
+                            <div>
+                                <h3>3. Find the Hidden Hearts</h3>
+                                <p>Cari 7 simbol hati bercahaya yang tersembunyi di sekitar taman untuk membuka gerbang rahasia.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startMiniGame(3)">Cari Hati</button>
+                        </div>
+                        <div class="game-card">
+                            <div>
+                                <h3>4. Memory of Us</h3>
+                                <p>Permainan mencocokkan kartu 3D dengan tema malam untuk mendapatkan tiket digital spesial.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startMiniGame(4)">Cocokkan Kartu</button>
+                        </div>
+                        <div class="game-card">
+                            <div>
+                                <h3>5. Catch the Starlight</h3>
+                                <p>Game arcade 30 detik menangkap bintang jatuh dengan skor real-time dan kontrol sentuh/keyboard.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startMiniGame(5)">Tangkap Bintang</button>
+                        </div>
+                        <div class="game-card">
+                            <div>
+                                <h3>6. The Secret Gift</h3>
+                                <p>Pilih 3 kotak hadiah misterius yang berisi surat, semangat, dan animasi kembang api.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startMiniGame(6)">Buka Hadiah</button>
+                        </div>
+                        <div class="game-card">
+                            <div>
+                                <h3>7. Build Your Dream Night</h3>
+                                <p>Kustomisasi taman impianmu sendiri: ubah langit, lampu, ornamen, dan efek kembang api secara instan.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startMiniGame(7)">Rancang Taman</button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Active Game Container -->
+                    <div id="activeGameArea" style="display: none;" class="game-active-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 id="activeGameTitle" style="color: var(--silver-white);">Judul Game</h3>
+                            <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;" onclick="closeActiveGame()">Tutup Game</button>
+                        </div>
+                        <div id="activeGameContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SKY GARDEN FULL SECTION -->
+            <section id="sky-garden-sec">
+                <div class="container">
+                    <div class="ferris-hero-card" style="text-align: left;">
+                        <span class="hero-badge" style="margin-bottom: 15px;">Special Letter</span>
+                        <h2 style="font-size: 2rem; margin-bottom: 20px;">Surat Spesial dari Kazu</h2>
+                        <div style="color: var(--ice-blue); font-family: Georgia, serif; line-height: 1.9; font-size: 1.05rem;">
+                            <p style="margin-bottom: 15px;">Untuk Azza,</p>
+                            <p style="margin-bottom: 15px;">Kalau suatu hari dunia terasa terlalu ramai, kalau banyak hal tidak berjalan sesuai harapan, atau kalau kamu merasa lelah menghadapi semuanya, semoga kamu ingat bahwa kamu tidak harus selalu terlihat kuat.</p>
+                            <p style="margin-bottom: 15px;">Kamu boleh beristirahat. Kamu boleh mengambil waktu untuk dirimu sendiri. Kamu boleh berjalan perlahan tanpa merasa tertinggal dari siapa pun.</p>
+                            <p style="margin-bottom: 15px;">Kazu mungkin tidak bisa mengatur bagaimana dunia memperlakukanmu. Tapi melalui tempat kecil ini, Kazu ingin meninggalkan satu pengingat: Kamu tetap berharga, bahkan ketika harimu tidak berjalan dengan sempurna.</p>
+                            <p style="font-weight: bold; color: var(--silver-white); margin-top: 25px;">— From Kazu, with care.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 15. THE NIGHT SHOW — FIREWORKS -->
+            <section id="night-show-sec">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>The Night Show</h2>
+                        <p>Pertunjukan kembang api megah di bawah langit malam bercahaya biru dan silver.</p>
+                    </div>
+                    <div class="ferris-hero-card" style="text-align: center;">
+                        <h3 style="margin-bottom: 15px;">Pertunjukan Kembang Api Malam</h3>
+                        <p style="color: var(--ice-blue); margin-bottom: 25px;">Tekan tombol di bawah untuk memulai pertunjukan spesial.</p>
+                        <button class="btn btn-primary" id="startFireworksBtn">Start the Night Show</button>
+                        <div class="fireworks-stage" id="fireworksStage" style="display: none;">
+                            <canvas id="fireworksCanvas"></canvas>
+                        </div>
+                        <div id="fireworksMessage" style="display: none; margin-top: 20px; font-style: italic; color: var(--ice-blue);">
+                            “The world is wide, and there are still so many beautiful places waiting to be discovered. Semoga perjalananmu selalu dipenuhi kesempatan baik, orang-orang yang tulus, dan alasan untuk terus tersenyum.”
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 17. FINAL ENDING -->
+            <section id="final-ending-sec">
+                <div class="container">
+                    <div class="ferris-hero-card" style="text-align: center;">
+                        <span class="hero-badge" style="margin-bottom: 15px;">Our Little Universe</span>
+                        <h2 style="margin-bottom: 20px;">A Little Wish for You</h2>
+                        <p style="color: var(--ice-blue); max-width: 700px; margin: 0 auto 30px auto; line-height: 1.8; font-family: Georgia, serif;">
+                            “Azza, di akhir perjalanan kecil ini, ada satu hal yang ingin Kazu sampaikan. Terima kasih sudah menjadi dirimu sendiri. Bukan karena website ini sempurna, melainkan karena Kazu ingin membuat sesuatu yang berbeda dari sekadar kata-kata biasa. Dunia ini luas, Azza. Semoga suatu hari nanti, ketika kamu mengingat perjalananmu, ada banyak hal baik yang membuatmu tersenyum.”
+                        </p>
+                        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="triggerFinalShow()">Lihat Pertunjukan Terakhir</button>
+                            <a href="#home" class="btn btn-secondary">Kembali ke Awal</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="container">
+                <p>Made with care by Kazu, for Azza.</p>
+                <button class="book-badge-btn" onclick="openAdventureBook()">Buka Adventure Book</button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal-overlay" id="ferrisModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('ferrisModal')">&times;</button>
+            <h3 style="margin-bottom: 20px;">Pesan dari Bianglala</h3>
+            <p style="color: var(--ice-blue); line-height: 1.8; font-family: Georgia, serif; margin-bottom: 20px;">
+                “Kalau Kazu bisa memberikan satu hal kepadamu, mungkin bukan sesuatu yang mahal atau mewah. Kazu ingin kamu tahu bahwa kamu tidak harus menjadi sempurna untuk menjadi seseorang yang berarti.<br><br>
+                Seperti bianglala yang terus berputar, hari-hari kita tidak selalu berada di atas. Ada saatnya semuanya terasa indah, ada juga saatnya terasa berat.<br><br>
+                Tapi semoga, di antara semua perubahan itu, kamu selalu menemukan alasan untuk tersenyum. Dan jika suatu hari kamu lupa betapa berharganya dirimu, semoga kata-kata kecil ini bisa mengingatkanmu kembali.”
+            </p>
+            <p style="font-weight: bold; text-align: right;">— Kazu, untuk Azza.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="tunnelModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('tunnelModal')">&times;</button>
+            <h3 style="margin-bottom: 20px;">Tunnel of Memories</h3>
+            <p style="color: var(--ice-blue); line-height: 1.8; font-family: Georgia, serif; margin-bottom: 20px;">
+                “Tidak semua hal indah harus menjadi sesuatu yang besar. Terkadang, satu percakapan sederhana bisa membuat hari terasa lebih ringan. Satu tawa kecil bisa menjadi kenangan yang bertahan lama.<br><br>
+                Yang membuat sesuatu berarti bukan seberapa megah bentuknya, melainkan ketulusan yang ada di dalamnya.”
+            </p>
+            <button class="btn btn-primary" onclick="closeModal('tunnelModal')">Tutup</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="carouselModal">
+        <div class="modal-box" style="text-align: center;">
+            <button class="modal-close" onclick="closeModal('carouselModal')">&times;</button>
+            <h3 style="margin-bottom: 20px;">Star Carousel Message</h3>
+            <p id="carouselMsgText" style="color: var(--ice-blue); line-height: 1.8; font-family: Georgia, serif; font-size: 1.1rem; margin-bottom: 25px; min-height: 80px;">
+                Memuat pesan...
+            </p>
+            <button class="btn btn-primary" onclick="loadRandomCarouselMessage()">Pesan Lainnya</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="adventureBookModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('adventureBookModal')">&times;</button>
+            <h3 style="margin-bottom: 20px;">Azza's Adventure Book</h3>
+            <div id="bookContent" style="color: var(--ice-blue); line-height: 1.8; margin-bottom: 25px;">
+                <p><strong>Game Selesai:</strong> <span id="statGames">0</span> / 7</p>
+                <p><strong>Total Skor:</strong> <span id="statScore">0</span></p>
+                <p><strong>Hati Ditemukan:</strong> <span id="statHearts">0</span> / 7</p>
+                <p><strong>Status Taman:</strong> <span id="statStatus">Eksplorasi Aktif</span></p>
+            </div>
+            <button class="btn btn-secondary" onclick="resetProgress()">Reset Progres</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Musik Kontrol (music.mp4 lokal)
+        let isMusicPlaying = false;
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggleBtn = document.getElementById('musicToggleBtn');
+
+        function toggleMusic() {
+            if (!bgMusic) return;
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                musicToggleBtn.textContent = '🎵 Putar Musik';
+            } else {
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    musicToggleBtn.textContent = '⏸️ Jeda Musik';
+                }).catch(e => {
+                    console.log("Autoplay dicegah browser atau file tidak ditemukan:", e);
+                    alert("Pastikan file 'music.mp4' berada di folder yang sama dengan file HTML ini.");
+                });
+            }
+        }
+
+        // Progress State Management
+        let appState = {
+            gamesCompleted: JSON.parse(localStorage.getItem('azza_games') || '[]'),
+            totalScore: parseInt(localStorage.getItem('azza_score') || '0'),
+            heartsFound: parseInt(localStorage.getItem('azza_hearts') || '0')
+        };
+
+        function saveProgress() {
+            try {
+                localStorage.setItem('azza_games', JSON.stringify(appState.gamesCompleted));
+                localStorage.setItem('azza_score', appState.totalScore);
+                localStorage.setItem('azza_hearts', appState.heartsFound);
+            } catch(e) {}
+        }
+
+        function recordGameCompletion(gameId, scoreEarned = 10) {
+            if (!appState.gamesCompleted.includes(gameId)) {
+                appState.gamesCompleted.push(gameId);
+                appState.totalScore += scoreEarned;
+                saveProgress();
+            }
+        }
+
+        // Opening Screen Transition
+        document.getElementById('enterParkBtn').addEventListener('click', () => {
+            const intro = document.getElementById('intro-screen');
+            intro.style.opacity = '0';
+            intro.style.visibility = 'hidden';
+            setTimeout(() => {
+                intro.style.display = 'none';
+                const mainApp = document.getElementById('main-app');
+                mainApp.classList.add('active');
+            }, 800);
+        });
+
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Modal Handlers
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.getElementById('openFerrisModal').addEventListener('click', () => openModal('ferrisModal'));
+        document.getElementById('openTunnelBtn').addEventListener('click', () => openModal('tunnelModal'));
+        document.getElementById('openCarouselBtn').addEventListener('click', () => {
+            loadRandomCarouselMessage();
+            openModal('carouselModal');
+        });
+        document.getElementById('openGardenBtn').addEventListener('click', () => {
+            document.getElementById('sky-garden-sec').scrollIntoView({behavior: 'smooth'});
+        });
+        document.getElementById('openBookBtn').addEventListener('click', openAdventureBook);
+
+        function openAdventureBook() {
+            document.getElementById('statGames').textContent = appState.gamesCompleted.length;
+            document.getElementById('statScore').textContent = appState.totalScore;
+            document.getElementById('statHearts').textContent = appState.heartsFound;
+            openModal('adventureBookModal');
+        }
+
+        function resetProgress() {
+            appState.gamesCompleted = [];
+            appState.totalScore = 0;
+            appState.heartsFound = 0;
+            saveProgress();
+            alert('Progres berhasil direset.');
+            closeModal('adventureBookModal');
+        }
+
+        // Carousel Messages
+        const carouselMessages = [
+            "Kamu tidak harus menjadi luar biasa setiap hari untuk menjadi seseorang yang berarti.",
+            "Semoga hal-hal yang kamu doakan diam-diam suatu hari datang membawa kebahagiaan.",
+            "Kalau hari ini terasa berat, semoga besok memberimu alasan baru untuk tersenyum.",
+            "Hal kecil yang dibuat dengan ketulusan pun bisa menjadi kenangan yang indah.",
+            "Semoga kamu selalu menemukan tempat untuk merasa tenang dan menjadi dirimu sendiri."
+        ];
+        function loadRandomCarouselMessage() {
+            const rand = carouselMessages[Math.floor(Math.random() * carouselMessages.length)];
+            document.getElementById('carouselMsgText').textContent = `“${rand}”`;
+        }
+
+        // MINI GAMES HUB LOGIC
+        const activeGameArea = document.getElementById('activeGameArea');
+        const activeGameTitle = document.getElementById('activeGameTitle');
+        const activeGameContent = document.getElementById('activeGameContent');
+
+        function closeActiveGame() {
+            activeGameArea.style.display = 'none';
+            activeGameContent.innerHTML = '';
+        }
+
+        function startMiniGame(gameNum) {
+            activeGameArea.style.display = 'block';
+            activeGameArea.scrollIntoView({behavior: 'smooth'});
+            
+            switch(gameNum) {
+                case 1: playLoveRiddle(); break;
+                case 2: playChooseStory(); break;
+                case 3: playHiddenHearts(); break;
+                case 4: playMemoryMatch(); break;
+                case 5: playCatchStarlight(); break;
+                case 6: playSecretGift(); break;
+                case 7: playBuildNight(); break;
+            }
+        }
+
+        // Game 1: Love Riddle
+        const riddles = [
+            { q: "Apa yang membuat hari biasa terasa istimewa tanpa perlu mengeluarkan uang?", opts: ["Percakapan tulus", "Barang mahal", "Makanan mewah"], correct: 0 },
+            { q: "Apa yang lebih berarti daripada hadiah mahal?", opts: ["Waktu & perhatian", "Diskon belanja", "Pameran foto"], correct: 0 },
+            { q: "Kalau kenangan punya tempat tinggal, di mana seharusnya ia disimpan?", opts: ["Di dalam hati", "Di lemari pakaian", "Di garasi"], correct: 0 },
+            { q: "Apa yang bisa membuat pesan sederhana diingat sepanjang hari?", opts: ["Ketulusan pengirim", "Panjangnya kalimat", "Stiker lucu"], correct: 0 },
+            { q: "Apa yang tidak bisa dibeli tetapi bisa diberikan setiap hari?", opts: ["Senyum & dukungan", "Tiket bioskop", "Kopi mahal"], correct: 0 },
+            { q: "Apa yang membuat seseorang merasa didengarkan?", opts: ["Disimak tanpa dihakimi", "Diberi nasihat instan", "Dialihkan topiknya"], correct: 0 },
+            { q: "Apa yang lebih penting daripada selalu berkata manis?", opts: ["Konsistensi & kejujuran", "Janji berlebihan", "Pujian palsu"], correct: 0 },
+            { q: "Apa yang membuat sebuah kejutan terasa spesial?", opts: ["Niat baik di baliknya", "Harganya yang tinggi", "Bungkusnya yang besar"], correct: 0 },
+            { q: "Apa yang bisa dilakukan saat seseorang sedang mengalami hari yang berat?", opts: ["Menemani dan mendengarkan", "Menyuruhnya diam", "Meninggalkannya"], correct: 0 },
+            { q: "Apa hadiah terbaik yang dapat diberikan kepada diri sendiri ketika sedang lelah?", opts: ["Istirahat dan waktu tenang", "Bekerja lembur", "Mengabaikan diri"], correct: 0 }
+        ];
+        let currentRiddle = 0;
+        let riddleScore = 0;
+        let combo = 0;
+
+        function playLoveRiddle() {
+            currentRiddle = 0;
+            riddleScore = 0;
+            combo = 0;
+            activeGameTitle.textContent = "Mini Game 1: Love Riddle";
+            renderRiddle();
+        }
+
+        function renderRiddle() {
+            if (currentRiddle >= riddles.length) {
+                activeGameContent.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <h3>Kuis Selesai!</h3>
+                        <p style="color: var(--ice-blue); margin: 15px 0;">Skor Kamu: ${riddleScore} dari ${riddles.length * 10}</p>
+                        <p style="color: var(--silver-white);">“Ketulusan hatimu luar biasa, Azza.”</p>
+                        <button class="btn btn-primary" style="margin-top: 20px;" onclick="playLoveRiddle()">Main Lagi</button>
+                    </div>
+                `;
+                recordGameCompletion(1, riddleScore);
+                return;
+            }
+
+            const item = riddles[currentRiddle];
+            let html = `
+                <p style="font-size: 0.9rem; color: var(--ice-blue); margin-bottom: 10px;">Pertanyaan ${currentRiddle + 1} dari ${riddles.length} | Combo: ${combo}x</p>
+                <h4 style="margin-bottom: 20px; font-size: 1.1rem;">${item.q}</h4>
+                <div class="quiz-options">
+            `;
+            item.opts.forEach((opt, idx) => {
+                html += `<button class="quiz-btn" onclick="checkRiddle(${idx}, ${item.correct})">${opt}</button>`;
+            });
+            html += `</div>`;
+            activeGameContent.innerHTML = html;
+        }
+
+        function checkRiddle(selected, correct) {
+            const btns = activeGameContent.querySelectorAll('.quiz-btn');
+            btns.forEach((b, i) => {
+                b.disabled = true;
+                if (i === correct) b.classList.add('correct');
+                else if (i === selected) b.classList.add('incorrect');
+            });
+
+            if (selected === correct) {
+                combo++;
+                riddleScore += 10 + (combo > 1 ? 5 : 0);
+            } else {
+                combo = 0;
+            }
+
+            setTimeout(() => {
+                currentRiddle++;
+                renderRiddle();
+            }, 1200);
+        }
+
+        // Game 2: Choose Our Story
+        function playChooseStory() {
+            activeGameTitle.textContent = "Mini Game 2: Choose Our Story";
+            activeGameContent.innerHTML = `
+                <h4 style="margin-bottom: 15px;">Malam di Taman Hiburan</h4>
+                <p style="color: var(--ice-blue); margin-bottom: 20px;">Azza tiba di gerbang taman malam yang berkilau biru. Ke mana kamu ingin melangkah terlebih dahulu?</p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="storyScene(1)">Naik Bianglala Raksasa</button>
+                    <button class="btn btn-secondary" onclick="storyScene(2)">Berjalan ke Taman Rahasia</button>
+                </div>
+            `;
+        }
+
+        function storyScene(choice) {
+            if (choice === 1) {
+                activeGameContent.innerHTML = `
+                    <h4 style="margin-bottom: 15px;">Di Kabin Bianglala</h4>
+                    <p style="color: var(--ice-blue); margin-bottom: 20px;">Dari ketinggian, gemerlap lampu kota terlihat indah. Di kursi kabin, Azza menemukan sebuah surat kecil dari Kazu.</p>
+                    <p style="font-style: italic; color: var(--silver-white); margin-bottom: 20px;">“The Ferris Wheel Ending: Semoga hidupmu selalu berputar ke arah yang membawa ketenangan dan kebahagiaan.”</p>
+                    <button class="btn btn-primary" onclick="playChooseStory()">Ulangi Cerita</button>
+                `;
+                recordGameCompletion(2, 20);
+            } else {
+                activeGameContent.innerHTML = `
+                    <h4 style="margin-bottom: 15px;">Di Taman Rahasia</h4>
+                    <p style="color: var(--ice-blue); margin-bottom: 20px;">Bunga-bunga biru bercahaya menyambut langkahmu. Di dekat air mancur, terdapat pesan terakhir yang hangat.</p>
+                    <p style="font-style: italic; color: var(--silver-white); margin-bottom: 20px;">“The Secret Garden Ending: Kamu selalu punya tempat tenang di sini, kapan pun kamu membutuhkannya.”</p>
+                    <button class="btn btn-primary" onclick="playChooseStory()">Ulangi Cerita</button>
+                `;
+                recordGameCompletion(2, 20);
+            }
+        }
+
+        // Game 3: Find the Hidden Hearts
+        let heartsFoundCount = 0;
+        function playHiddenHearts() {
+            heartsFoundCount = appState.heartsFound;
+            activeGameTitle.textContent = "Mini Game 3: Find the Hidden Hearts";
+            renderHeartsArea();
+        }
+
+        function renderHeartsArea() {
+            activeGameContent.innerHTML = `
+                <p style="color: var(--ice-blue); margin-bottom: 10px;">Temukan 7 simbol hati bercahaya di area taman di bawah ini! (${appState.heartsFound}/7 Ditemukan)</p>
+                <div class="park-exploration-area" id="heartsArea">
+                    <span class="hidden-heart" style="top: 20%; left: 15%;" onclick="foundHeart(this)">💙</span>
+                    <span class="hidden-heart" style="top: 60%; left: 30%;" onclick="foundHeart(this)">💙</span>
+                    <span class="hidden-heart" style="top: 30%; left: 70%;" onclick="foundHeart(this)">💙</span>
+                    <span class="hidden-heart" style="top: 75%; left: 80%;" onclick="foundHeart(this)">💙</span>
+                    <span class="hidden-heart" style="top: 40%; left: 45%;" onclick="foundHeart(this)">💙</span>
+                    <span class="hidden-heart" style="top: 15%; left: 85%;" onclick="foundHeart(this)">💙</span>
+                    <span class="hidden-heart" style="top: 80%; left: 15%;" onclick="foundHeart(this)">💙</span>
+                </div>
+            `;
+        }
+
+        function foundHeart(el) {
+            if (!el.classList.contains('found')) {
+                el.classList.add('found');
+                appState.heartsFound = Math.min(7, appState.heartsFound + 1);
+                saveProgress();
+                renderHeartsArea();
+                if (appState.heartsFound === 7) {
+                    setTimeout(() => {
+                        alert("Gerbang rahasia menuju Sky Garden terbuka! ‘Kadang, hal-hal yang paling berarti kita temukan dengan kesabaran dan perhatian.’");
+                        recordGameCompletion(3, 30);
+                    }, 300);
+                }
+            }
+        }
+
+        // Game 4: Memory Match
+        const memoryEmojis = ['🌙', '⭐', '💙', '🎟️', '🎡', '✉️', '🎁', '✨'];
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        function playMemoryMatch() {
+            activeGameTitle.textContent = "Mini Game 4: Memory of Us";
+            memoryCards = [...memoryEmojis, ...memoryEmojis]
+                .sort(() => Math.random() - 0.5)
+                .map((emoji, idx) => ({ id: idx, emoji, flipped: false, matched: false }));
+            flippedCards = [];
+            matchedPairs = 0;
+            renderMemoryBoard();
+        }
+
+        function renderMemoryBoard() {
+            let html = `<p style="color: var(--ice-blue); margin-bottom: 15px;">Pasangan ditemukan: ${matchedPairs} / 8</p><div class="memory-grid">`;
+            memoryCards.forEach(card => {
+                let cls = 'memory-card';
+                if (card.flipped || card.matched) cls += ' flipped';
+                html += `<div class="${cls}" onclick="flipMemoryCard(${card.id})">${card.flipped || card.matched ? card.emoji : '?'}</div>`;
+            });
+            html += `</div>`;
+            activeGameContent.innerHTML = html;
+        }
+
+        function flipMemoryCard(id) {
+            const card = memoryCards.find(c => c.id === id);
+            if (!card || card.flipped || card.matched || flippedCards.length >= 2) return;
+
+            card.flipped = true;
+            flippedCards.push(card);
+            renderMemoryBoard();
+
+            if (flippedCards.length === 2) {
+                setTimeout(() => {
+                    if (flippedCards[0].emoji === flippedCards[1].emoji) {
+                        flippedCards[0].matched = true;
+                        flippedCards[1].matched = true;
+                        matchedPairs++;
+                        if (matchedPairs === 8) {
+                            alert("AZZA'S SPECIAL TICKET: Selamat! Anda telah menyelesaikan Memory of Us.");
+                            recordGameCompletion(4, 30);
+                        }
+                    } else {
+                        flippedCards[0].flipped = false;
+                        flippedCards[1].flipped = false;
+                    }
+                    flippedCards = [];
+                    renderMemoryBoard();
+                }, 800);
+            }
+        }
+
+        // Game 5: Catch the Starlight
+        let arcadeInterval = null;
+        function playCatchStarlight() {
+            activeGameTitle.textContent = "Mini Game 5: Catch the Starlight";
+            activeGameContent.innerHTML = `
+                <p style="color: var(--ice-blue); margin-bottom: 10px;">Tangkap bintang sebanyak mungkin dalam 30 detik!</p>
+                <div class="arcade-canvas-wrap">
+                    <canvas id="arcadeCanvas" width="500" height="350"></canvas>
+                </div>
+                <button class="btn btn-primary" onclick="startArcadeGame()">Mulai Game</button>
+            `;
+        }
+
+        function startArcadeGame() {
+            const canvas = document.getElementById('arcadeCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let timeLeft = 30;
+            let basketX = 225;
+            let stars = [];
+
+            const keyState = {};
+            window.onkeydown = e => keyState[e.key] = true;
+            window.onkeyup = e => keyState[e.key] = false;
+
+            canvas.onmousemove = e => {
+                const rect = canvas.getBoundingClientRect();
+                basketX = e.clientX - rect.left - 30;
+            };
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(arcadeInterval);
+                    clearInterval(timer);
+                    activeGameContent.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <h3>Waktu Habis!</h3>
+                            <p style="color: var(--ice-blue); margin: 15px 0;">Skor Bintang: ${score}</p>
+                            <button class="btn btn-primary" onclick="playCatchStarlight()">Main Lagi</button>
+                        </div>
+                    `;
+                    recordGameCompletion(5, score * 2);
+                }
+            }, 1000);
+
+            arcadeInterval = setInterval(() => {
+                ctx.clearRect(0, 0, 500, 350);
+
+                if (keyState['ArrowLeft'] || keyState['a']) basketX -= 8;
+                if (keyState['ArrowRight'] || keyState['d']) basketX += 8;
+                basketX = Math.max(0, Math.min(440, basketX));
+
+                ctx.fillStyle = '#4DA3FF';
+                ctx.fillRect(basketX, 320, 60, 15);
+
+                if (Math.random() < 0.08) {
+                    stars.push({ x: Math.random() * 470, y: 0, special: Math.random() < 0.2 });
+                }
+
+                stars.forEach((s, idx) => {
+                    s.y += s.special ? 4 : 2.5;
+                    ctx.fillStyle = s.special ? '#F5F9FF' : '#C9E6FF';
+                    ctx.beginPath();
+                    ctx.arc(s.x + 10, s.y + 10, s.special ? 8 : 5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    if (s.y >= 310 && s.x + 20 >= basketX && s.x <= basketX + 60) {
+                        score += s.special ? 5 : 1;
+                        stars.splice(idx, 1);
+                    } else if (s.y > 350) {
+                        stars.splice(idx, 1);
+                    }
+                });
+
+                ctx.fillStyle = '#F5F9FF';
+                ctx.font = '14px sans-serif';
+                ctx.fillText(`Waktu: ${timeLeft}s | Skor: ${score}`, 15, 25);
+            }, 1000 / 60);
+        }
+
+        // Game 6: The Secret Gift
+        function playSecretGift() {
+            activeGameTitle.textContent = "Mini Game 6: The Secret Gift";
+            activeGameContent.innerHTML = `
+                <p style="color: var(--ice-blue); margin-bottom: 20px;">Pilih salah satu dari tiga kotak hadiah di bawah ini:</p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="openGiftBox(1)">🎁 Kotak Pertama</button>
+                    <button class="btn btn-secondary" onclick="openGiftBox(2)">🎁 Kotak Kedua</button>
+                    <button class="btn btn-secondary" onclick="openGiftBox(3)">🎁 Kotak Ketiga</button>
+                </div>
+                <div id="giftResult" style="margin-top: 25px; text-align: center; color: var(--ice-blue);"></div>
+            `;
+        }
+
+        function openGiftBox(boxNum) {
+            const result = document.getElementById('giftResult');
+            if (boxNum === 1) {
+                result.innerHTML = `<strong>Surat Pendek:</strong> “Terima kasih telah menjadi alasan tersenyum di hari-hari biasa.”`;
+            } else if (boxNum === 2) {
+                result.innerHTML = `<strong>Pesan Penyemangat:</strong> “Apapun mimpimu, kejarlah dengan tenang. Kamu pasti bisa!”`;
+            } else {
+                result.innerHTML = `<strong>Kejutan Spesial:</strong> ✨ Cahaya kembang api biru dan silver menyala terang untukmu! ✨`;
+            }
+            recordGameCompletion(6, 15);
+        }
+
+        // Game 7: Build Your Dream Night
+        function playBuildNight() {
+            activeGameTitle.textContent = "Mini Game 7: Build Your Dream Night";
+            activeGameContent.innerHTML = `
+                <p style="color: var(--ice-blue); margin-bottom: 15px;">Kustomisasi taman impianmu:</p>
+                <div style="display: flex; flex-direction: column; gap: 12px; max-width: 400px; margin: 0 auto;">
+                    <label>Pilih Nuansa Langit: <select id="skyTheme" class="quiz-btn" style="padding: 8px;"><option value="#07152E">Midnight Navy</option><option value="#0B1D3A">Deep Sapphire</option></select></label>
+                    <label>Intensitas Bintang: <select id="starDensity" class="quiz-btn" style="padding: 8px;"><option value="0.6">Normal</option><option value="0.9">Sangat Terang</option></select></label>
+                    <button class="btn btn-primary" onclick="applyDreamNight()">Create My Night</button>
+                </div>
+                <div id="dreamResult" style="margin-top: 20px; text-align: center; color: var(--silver-white);"></div>
+            `;
+        }
+
+        function applyDreamNight() {
+            const sky = document.getElementById('skyTheme').value;
+            document.body.style.backgroundColor = sky;
+            document.getElementById('dreamResult').innerHTML = "<strong>Azza's Dream Night berhasil diterapkan!</strong><br>‘A little universe, created by you.’";
+            recordGameCompletion(7, 25);
+        }
+
+        // Night Show — Fireworks Canvas
+        const startFireworksBtn = document.getElementById('startFireworksBtn');
+        const fireworksStage = document.getElementById('fireworksStage');
+        const fireworksMessage = document.getElementById('fireworksMessage');
+
+        startFireworksBtn.addEventListener('click', () => {
+            fireworksStage.style.display = 'block';
+            fireworksMessage.style.display = 'block';
+            startFireworksBtn.style.display = 'none';
+            runFireworksAnimation();
+        });
+
+        function runFireworksAnimation() {
+            const canvas = document.getElementById('fireworksCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = fireworksStage.clientWidth;
+            canvas.height = fireworksStage.clientHeight;
+
+            let particles = [];
+
+            function spawnFirework() {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * (canvas.height / 2);
+                const color = Math.random() > 0.5 ? '#4DA3FF' : '#F5F9FF';
+                for (let i = 0; i < 50; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 4 + 1;
+                    particles.push({
+                        x: x, y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        alpha: 1,
+                        color: color
+                    });
+                }
+            }
+
+            setInterval(spawnFirework, 800);
+            setInterval(() => {
+                ctx.fillStyle = 'rgba(3, 8, 20, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach((p, idx) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= 0.015;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    if (p.alpha <= 0) particles.splice(idx, 1);
+                });
+            }, 1000 / 60);
+        }
+
+        function triggerFinalShow() {
+            document.getElementById('night-show-sec').scrollIntoView({behavior: 'smooth'});
+            startFireworksBtn.click();
+        }
+    </script>
+</body>
+</html>
